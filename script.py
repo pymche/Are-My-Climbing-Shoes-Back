@@ -13,9 +13,18 @@ shoe_size = '5.5'
 pattern = re.compile(shoe_size)
 
 # Conversion between EU and UK size and vice versa
+
+# First exclude child size in script
+child_size_key = [n + 0.5 for n in range(27, 35)]
+child_size = {}
+for x in range(0, len(child_size_key)):
+    child_size_key[x] = str(child_size_key[x])
+    child_size[child_size_key[x]] = 'NA'
+
 conversion = {
 '35':2, '35.5':2.5, '36':3, '36.5':3.5, '37':4, '37.5':4.5, '38':5, '38.5':5.5, '39':6, '39.5':6.5, '40':6.5, '40.5': 7, '41':7, '41.5':7.5, '42':8, '42.5':8.5, '43':9, '43.5': 9, '44':9.5, '44.5': 10, '45':10, '45.5':10.5, '46':11, '46.5':11.5, '47':12, '47.5':12.5, '48':13, '48.5':13.5, '49':14, '50':14.5, '51':15
 }
+conversion.update(child_size)
 conversion_2 = dict([(str(value), float(key)) for key, value in conversion.items()]) # swapping key and values from conversion dictionary
 
 # storing available shoes
@@ -25,26 +34,30 @@ price_display = []
 
 # Starting browser
 driver = webdriver.Chrome()
-driver.get("https://rockrun.com/collections/womens-rock-shoes")
+driver.get("https://rockrun.com/collections/climbing-shoes")
 products = driver.find_elements_by_class_name("product-wrap")
 
 """ Loop through each pair of available shoes on display"""
 
 for product in products:
     # string with name, after price, before price
+    print(product.text)
     text = product.text.split('\n') # splitting string into name and prices
     print('Shoe name:', text[0])
 
     """Split list of string of 2 prices into before and after sale prices"""
 
-    price = text[1].split(' ')  # splitting prices into two, now a list
+    if text[1] == 'Sold Out':
+        print('{} is currently unavailable'.format(text[0]))
+    else:
+        price = text[1].split(' ')  # splitting prices into two, now a list
 
-    for x in range(0, len(price)):
+        for x in range(0, len(price)):
 
-        price[x] = float(price[x].replace("£", ""))
+            price[x] = float(price[x].replace("£", ""))
 
-    print('Price before sale:', max(price))
-    print('Price after sale:', min(price))
+        print('Price before sale:', max(price))
+        print('Price after sale:', min(price))
 
     """If sale price is lower than budget, save product link for later to check for available size, send email to notify if in stock"""
 
@@ -79,11 +92,27 @@ with open('email_message', 'w') as f:
 
             label = shoe.text
 
-            if 'EU' in label:
-                label = label.replace("EU ", "")
-                label = str(conversion[label])
-            else:
-                label = label.replace("UK ", "")
+            if '-' not in label:
+                if 'EU' in label:
+                    label = label.replace("EU ", "")
+                    label = str(conversion[label])
+                elif 'UK' in label:
+                    label = label.replace("UK ", "")
+            elif '-' in label:
+                label_temp = label.split(' ')
+                label_temp = label_temp[1].split('-')
+                store = {}
+                for x in range (0, len(label_temp)):
+                    label_temp[x] = float(label_temp[x])
+                    store[x] = label_temp[x]
+                label_temp_2 = (store[0] + store[1])/2
+                label = str(label_temp_2)
+
+                if 'EU' in label:
+                    label = label.replace("EU ", "")
+                    label = str(conversion[label])
+                elif 'UK' in label:
+                    label = label.replace("UK ", "")
 
             matches = pattern.finditer(label)
             for match in matches:
@@ -110,7 +139,7 @@ with open('email_message', 'r') as f:
         EMAIL_PASSWORD = os.environ.get('GMAIL_PASS')
 
         msg = EmailMessage()
-        msg['Subject'] = 'CLIMBING SHOES BACK IN STOCK YOOOOO'
+        msg['Subject'] = 'CLIMBING SHOES IN YOUR SIZE AND BUDGET BOOOMMMM'
         msg['From'] = EMAIL_ADDRESS
         msg['To'] = 'cpy.melanie@gmail.com'
 
