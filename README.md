@@ -3,9 +3,11 @@
 Climbing shoes in [Rock and Run](https://rockrun.com/collections/climbing-shoes) go on sale all the time, but unfortunately the ones that are in my size and within my budget are always out of stock!
 Consider this publication a celebration of my first complete programming script and me not giving up halfway through!
 
+This script runs through catalogue of climbing shoes, clicks on products that are within budget, check for availability in preferred shoe size and keep track of available items in a separate file, which content will be sent as an email to notify user.
+
 Current [script](https://github.com/pymche/Are-My-Climbing-Shoes-Back/blob/master/script.py) runs through all climbing shoes, with a budget of £100 and size preference of 6.
 
-Example of [email message](https://github.com/pymche/Are-My-Climbing-Shoes-Back/blob/master/email_message)
+Example of [email message](https://github.com/pymche/Are-My-Climbing-Shoes-Back/blob/master/email_message).
 
 ### Installation
 1. Install Selenium
