@@ -92,13 +92,7 @@ with open('email_message', 'w') as f:
 
             label = shoe.text
 
-            if '-' not in label:
-                if 'EU' in label:
-                    label = label.replace("EU ", "")
-                    label = str(conversion[label])
-                elif 'UK' in label:
-                    label = label.replace("UK ", "")
-            elif '-' in label:
+            if '-' in label:
                 label_temp = label.split(' ')
                 label_temp = label_temp[1].split('-')
                 store = {}
@@ -108,11 +102,11 @@ with open('email_message', 'w') as f:
                 label_temp_2 = (store[0] + store[1])/2
                 label = str(label_temp_2)
 
-                if 'EU' in label:
-                    label = label.replace("EU ", "")
-                    label = str(conversion[label])
-                elif 'UK' in label:
-                    label = label.replace("UK ", "")
+            if 'EU' in label:
+                label = label.replace("EU ", "")
+                label = str(conversion[label])
+            elif 'UK' in label:
+                label = label.replace("UK ", "")
 
             matches = pattern.finditer(label)
             for match in matches:
