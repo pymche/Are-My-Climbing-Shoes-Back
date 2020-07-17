@@ -4,6 +4,7 @@ Climbing shoes in [Rock and Run](https://rockrun.com/collections/climbing-shoes)
 What do you do in this case? Dedicate my first complete programming script to making my life a bit easier....
 
 Current [script](https://github.com/pymche/Are-My-Climbing-Shoes-Back/blob/master/script.py) runs through all climbing shoes, with a budget of £100 and size preference of 6.
+
 Example of [email message](https://github.com/pymche/Are-My-Climbing-Shoes-Back/blob/master/email_message)
 
 ### Installation
