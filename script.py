@@ -8,8 +8,8 @@ import os
 from email.message import EmailMessage
 
 # User specification
-budget = 50
-shoe_size = '5.5'
+budget = 100
+shoe_size = '6'
 pattern = re.compile(shoe_size)
 
 # Conversion between EU and UK size and vice versa
