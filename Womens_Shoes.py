@@ -2,15 +2,13 @@ import selenium
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-import re
 import smtplib
 import os
 from email.message import EmailMessage
 
 # User specification
-budget = 100
+budget = 50
 shoe_size = '5.5'
-pattern = re.compile(shoe_size)
 
 # Conversion between EU and UK size and vice versa
 
@@ -22,10 +20,14 @@ for x in range(0, len(child_size_key)):
     child_size[child_size_key[x]] = 'NA'
 
 conversion = {
-'35':2, '35.5':2.5, '36':3, '36.5':3.5, '37':4, '37.5':4.5, '38':5, '38.5':5.5, '39':6, '39.5':6.5, '40':6.5, '40.5': 7, '41':7, '41.5':7.5, '42':8, '42.5':8.5, '43':9, '43.5': 9, '44':9.5, '44.5': 10, '45':10, '45.5':10.5, '46':11, '46.5':11.5, '47':12, '47.5':12.5, '48':13, '48.5':13.5, '49':14, '50':14.5, '51':15
+    '35': 2, '35.5': 2.5, '36': 3, '36.5': 3.5, '37': 4, '37.5': 4.5, '38': 5, '38.5': 5.5, '39': 6, '39.5': 6.5,
+    '40': 6.5, '40.5': 7, '41': 7, '41.5': 7.5, '42': 8, '42.5': 8.5, '43': 9, '43.5': 9, '44': 9.5, '44.5': 10,
+    '45': 10, '45.5': 10.5, '46': 11, '46.5': 11.5, '47': 12, '47.5': 12.5, '48': 13, '48.5': 13.5, '49': 14,
+    '50': 14.5, '51': 15
 }
 conversion.update(child_size)
-conversion_2 = dict([(str(value), float(key)) for key, value in conversion.items()]) # swapping key and values from conversion dictionary
+conversion_2 = dict([(str(value), float(key)) for key, value in
+                     conversion.items()])  # swapping key and values from conversion dictionary
 
 # storing available shoes
 links = []  # list of links to shoes to loop through after filtering
@@ -34,7 +36,7 @@ price_display = []
 
 # Starting browser
 driver = webdriver.Chrome()
-driver.get("https://rockrun.com/collections/womens-rock-shoes")
+driver.get("https://rockrun.com/collections/climbing-shoes")
 products = driver.find_elements_by_class_name("product-wrap")
 
 """ Loop through each pair of available shoes on display"""
@@ -42,7 +44,7 @@ products = driver.find_elements_by_class_name("product-wrap")
 for product in products:
     # string with name, after price, before price
     print(product.text)
-    text = product.text.split('\n') # splitting string into name and prices
+    text = product.text.split('\n')  # splitting string into text[0] name and text[1] prices
     print('Shoe name:', text[0])
 
     """Split list of string of 2 prices into before and after sale prices"""
@@ -53,7 +55,6 @@ for product in products:
         price = text[1].split(' ')  # splitting prices into two, now a list
 
         for x in range(0, len(price)):
-
             price[x] = float(price[x].replace("£", ""))
 
         print('Price before sale:', max(price))
@@ -68,21 +69,25 @@ for product in products:
         price_display.append(min(price))
         name.append(text[0])
 
-        link = driver.find_element_by_link_text(text[0])    # Find link by title of link
-        link = link.get_attribute('href')   # Access link from <a href> tag with get_attribute
+        link = driver.find_element_by_link_text(text[0])  # Find link by title of link
+        link = link.get_attribute('href')  # Access link from <a href> tag with get_attribute
         links.append(link)
 
         # print(price_display)
         # print(name)
         # print(link)
 
+    else:
+        print('Shoe not within budget')
+
     print('\n')
 
 """Check for available sizes and save results as message to send as email later"""
 
 with open('email_message', 'w') as f:
-
     for x in range(0, len(links)):
+
+        # Get all sizes
 
         driver.get(links[x])
 
@@ -92,14 +97,16 @@ with open('email_message', 'w') as f:
 
             label = shoe.text
 
+            # Parsing and editing size text in display
+
             if '-' in label:
                 label_temp = label.split(' ')
                 label_temp = label_temp[1].split('-')
                 store = {}
-                for x in range (0, len(label_temp)):
+                for x in range(0, len(label_temp)):
                     label_temp[x] = float(label_temp[x])
                     store[x] = label_temp[x]
-                label_temp_2 = (store[0] + store[1])/2
+                label_temp_2 = (store[0] + store[1]) / 2
                 label = str(label_temp_2)
 
             if 'EU' in label:
@@ -108,20 +115,27 @@ with open('email_message', 'w') as f:
             elif 'UK' in label:
                 label = label.replace("UK ", "")
 
-            matches = pattern.finditer(label)
-            for match in matches:
+            # Check if user size is in stock
+
+            if label == shoe_size:
                 availability = shoe.get_attribute('class')
                 availability = availability.split(' ')[-1:]
                 availability = str(availability[0])
 
                 if availability == 'soldout':
 
-                    print('{} in UK size {} / EU size {} is currently {}, click here to check for other sizes: {}'.format(name[x], shoe_size, conversion_2[shoe_size], availability, links[x]))
+                    print(
+                        '{} in UK size {} / EU size {} is currently {}, click here to check for other sizes: {}'.format(
+                            name[x], shoe_size, conversion_2[shoe_size], availability, links[x]))
 
                 elif availability == 'available':
 
-                    msg = '{} in UK size {} / EU size {} is currently {} at £{}, click here to buy: {} \n'.format(name[x], shoe_size, conversion_2[shoe_size], availability, price_display[x], links[x])
+                    msg = '{} in UK size {} / EU size {} is currently {} at £{}, click here to buy: {} \n'.format(
+                        name[x], shoe_size, conversion_2[shoe_size], availability, price_display[x], links[x])
                     f.write(msg)
+
+            else:
+                pass
 
 """Send email to notify"""
 
@@ -147,6 +161,5 @@ with open('email_message', 'r') as f:
 
     else:
         print('No shoes available!')
-
 
 driver.quit()
