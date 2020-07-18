@@ -123,6 +123,7 @@ with open('email_message', 'w') as f:
                 if availability == 'soldout':
 
                     print('{} in UK size {} / EU size {} is currently {}, click here to check for other sizes: {}'.format(name[x], shoe_size, conversion_2[shoe_size], availability, links[x]))
+                    f.write("")
 
                 elif availability == 'available':
 
@@ -130,7 +131,7 @@ with open('email_message', 'w') as f:
                     f.write(msg)
 
             else:
-                pass
+                f.write("")
 
 """Send email to notify"""
 
