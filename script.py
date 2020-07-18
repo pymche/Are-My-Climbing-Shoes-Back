@@ -2,7 +2,6 @@ import selenium
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-import re
 import smtplib
 import os
 from email.message import EmailMessage
@@ -10,7 +9,6 @@ from email.message import EmailMessage
 # User specification
 budget = 100
 shoe_size = '6'
-pattern = re.compile(shoe_size)
 
 # Conversion between EU and UK size and vice versa
 
@@ -76,6 +74,9 @@ for product in products:
         # print(name)
         # print(link)
 
+    else:
+        print('Shoe not within budget')
+
     print('\n')
 
 """Check for available sizes and save results as message to send as email later"""
@@ -84,6 +85,8 @@ with open('email_message', 'w') as f:
 
     for x in range(0, len(links)):
 
+        # Get all sizes
+
         driver.get(links[x])
 
         available_shoe_sizes = driver.find_elements_by_xpath("//div[@tabindex='0']")
@@ -91,6 +94,8 @@ with open('email_message', 'w') as f:
         for shoe in available_shoe_sizes:
 
             label = shoe.text
+
+            # Parsing and editing size text in display
 
             if '-' in label:
                 label_temp = label.split(' ')
@@ -108,8 +113,9 @@ with open('email_message', 'w') as f:
             elif 'UK' in label:
                 label = label.replace("UK ", "")
 
-            matches = pattern.finditer(label)
-            for match in matches:
+            # Check if user size is in stock
+
+            if label == shoe_size:
                 availability = shoe.get_attribute('class')
                 availability = availability.split(' ')[-1:]
                 availability = str(availability[0])
@@ -122,6 +128,9 @@ with open('email_message', 'w') as f:
 
                     msg = '{} in UK size {} / EU size {} is currently {} at £{}, click here to buy: {} \n'.format(name[x], shoe_size, conversion_2[shoe_size], availability, price_display[x], links[x])
                     f.write(msg)
+
+            else:
+                pass
 
 """Send email to notify"""
 
