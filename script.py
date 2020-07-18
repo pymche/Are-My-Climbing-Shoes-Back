@@ -42,7 +42,7 @@ products = driver.find_elements_by_class_name("product-wrap")
 for product in products:
     # string with name, after price, before price
     print(product.text)
-    text = product.text.split('\n') # splitting string into name and prices
+    text = product.text.split('\n') # splitting string into text[0] name and text[1] prices
     print('Shoe name:', text[0])
 
     """Split list of string of 2 prices into before and after sale prices"""

@@ -8,7 +8,7 @@ import os
 from email.message import EmailMessage
 
 # User specification
-budget = 50
+budget = 100
 shoe_size = '5.5'
 pattern = re.compile(shoe_size)
 
