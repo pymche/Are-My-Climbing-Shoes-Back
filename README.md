@@ -16,3 +16,7 @@ Current [script.py](https://github.com/pymche/Are-My-Climbing-Shoes-Back/blob/ma
 2. Install latest version of Chromedriver
 3. Set up environment variables for email and password for email set up
 4. Crontab run every 2 hours
+
+
+
+First commit: 18th July
