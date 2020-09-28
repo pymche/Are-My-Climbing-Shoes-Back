@@ -19,4 +19,4 @@ Current [script.py](https://github.com/pymche/Are-My-Climbing-Shoes-Back/blob/ma
 
 
 
-First commit: 18th July
+First commit: 18th July, 2020
